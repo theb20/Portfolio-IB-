@@ -1,4 +1,4 @@
-# 🧑‍💻 Portfolio — Ibrahima Baby
+# Portfolio — Ibrahima Baby
 
 > Portfolio personnel développé avec **Node.js / Express** en architecture **MVC**, déployé sur [ahobaut.fr](https://ahobaut.fr).
 
