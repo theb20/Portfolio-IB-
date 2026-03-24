@@ -8,7 +8,7 @@
 
 ---
 
-## 📸 Démo
+## Démo
 
 🔗 **Site en ligne** : [https://ahobaut.fr](https://ahobaut.fr)
 
@@ -16,7 +16,7 @@
 
 ---
 
-## ✨ Fonctionnalités
+## Fonctionnalités
 
 - Présentation des projets personnels et professionnels
 - Page de contact fonctionnelle
@@ -26,7 +26,7 @@
 
 ---
 
-## 🏗️ Architecture MVC
+## Architecture MVC
 
 Le projet suit le patron de conception **Model — View — Controller** :
 
@@ -79,7 +79,7 @@ Controller  ──────►  Model  (récupère les données)
 
 ---
 
-## 📦 Scripts disponibles
+## Scripts disponibles
 
 | Commande | Description |
 |---|---|
@@ -89,7 +89,7 @@ Controller  ──────►  Model  (récupère les données)
 
 ---
 
-## 🤝 Contribution
+## Contribution
 
 Les contributions sont les bienvenues ! Pour proposer une amélioration :
 
@@ -101,7 +101,7 @@ Les contributions sont les bienvenues ! Pour proposer une amélioration :
 
 ---
 
-## 📄 Licence
+## Licence
 
 Ce projet est sous licence **MIT** — voir le fichier [LICENSE](./LICENSE) pour plus de détails.
 
