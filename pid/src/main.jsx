@@ -6,13 +6,13 @@ import './index.css'
 import App from './App.jsx'
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyBslnlWqlO4nL5fxuwel4ItCJDkBxIsdP4',
-  authDomain: 'ibrahima-baby.firebaseapp.com',
-  projectId: 'ibrahima-baby',
-  storageBucket: 'ibrahima-baby.firebasestorage.app',
-  messagingSenderId: '337846351178',
-  appId: '1:337846351178:web:aeec542ed4892f1db63db3',
-  measurementId: 'G-YRSLBJ7D0P',
+  apiKey: import.meta.env.VITE_API_KEY,
+  authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_APP_ID,
+  measurementId: import.meta.env.VITE_MEASUREMENT_ID,
 }
 const app = initializeApp(firebaseConfig)
 isSupported().then((ok) => {
