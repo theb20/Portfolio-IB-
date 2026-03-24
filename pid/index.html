@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="google-site-verification" content="w4Kj86dzCuB2roShJD1L1RHmENHLP3T5-SP9FNR2r7s" />
+
+    <!-- ═══════════════════════════════════════════════
+         VIEWPORT & CORE META
+    ═══════════════════════════════════════════════ -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- ═══════════════════════════════════════════════
+         SEO META
+    ═══════════════════════════════════════════════ -->
+    <title>Ibrahima Baby - Portfolio</title>
+    <meta name="description" content="Vidéaste spécialisé cadrage & montage pour créateurs de contenu. En parallèle, machiniste plateau dans le monde du spectacle vivant." />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0a0a0f" />
+    <meta name="color-scheme" content="dark light" />
+
+    <!-- ═══════════════════════════════════════════════
+         OPEN GRAPH
+    ═══════════════════════════════════════════════ -->
+    <meta property="og:type"        content="website" />
+    <meta property="og:title"       content="Ibrahima Baby - Portfolio" />
+    <meta property="og:description" content="Vidéaste spécialisé cadrage & montage pour créateurs de contenu. En parallèle, machiniste plateau dans le monde du spectacle vivant." />
+    <meta property="og:image"       content="/og-image.png" />
+    <meta property="og:url"         content="https://ibrahima-baby.web.app" />
+    <meta property="og:site_name"   content="pid" />
+
+    <!-- ═══════════════════════════════════════════════
+         TWITTER / X CARD
+    ═══════════════════════════════════════════════ -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:title"       content="Ibrahima Baby - Portfolio" />
+    <meta name="twitter:description" content="Vidéaste spécialisé cadrage & montage pour créateurs de contenu. En parallèle, machiniste plateau dans le monde du spectacle vivant." />
+    <meta name="twitter:image"       content="/og-image.png" />
+
+    <!-- ═══════════════════════════════════════════════
+         ICONS & PWA MANIFEST
+    ═══════════════════════════════════════════════ -->
+    <link rel="icon"             type="image/svg+xml"  href="/favicon/favicon.svg" />
+    <link rel="icon"             type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png" />
+    <link rel="icon"             type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180"  href="/favicon/apple-touch-icon.png" />
+    <link rel="manifest"         href="/favicon/site.webmanifest" />
+    <link rel="mask-icon"        href="/favicon/favicon.svg" color="#0a0a0f" />
+    <meta name="msapplication-TileColor" content="#0a0a0f" />
+
+    <!-- ═══════════════════════════════════════════════
+         CANONICAL
+    ═══════════════════════════════════════════════ -->
+    <link rel="canonical" href="https://ibrahima-baby.web.app" />
+
+    <!-- ═══════════════════════════════════════════════
+         PERFORMANCE — DNS PREFETCH / PRECONNECT
+         (adjust origins to match your actual stack)
+    ═══════════════════════════════════════════════ -->
+    <link rel="preconnect"    href="https://fonts.googleapis.com" />
+    <link rel="preconnect"    href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch"  href="https://fonts.googleapis.com" />
+
+    <!-- ═══════════════════════════════════════════════
+         PERFORMANCE — MODULE PRELOAD
+         Vite injects hashed chunks here at build time;
+         keep this comment as a reminder.
+    ═══════════════════════════════════════════════ -->
+    <!-- <link rel="modulepreload" href="/src/main.jsx" /> -->
+
+    <!-- ═══════════════════════════════════════════════
+         CRITICAL CSS — NO FLASH, NO LAYOUT SHIFT
+         Rendered before any JS, ensures:
+           • background colour matches theme-color
+           • loading screen appears instantly
+           • body hidden until React hydrates
+    ═══════════════════════════════════════════════ -->
+    <style>
+      /* ── Reset & root tokens ─────────────────────── */
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      :root {
+        --bg:      #0a0a0f;
+        --fg:      #f0ede8;
+        --accent:  #c8f04d;
+        --muted:   rgba(240,237,232,.35);
+        --radius:  6px;
+        --font-ui: "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
+      }
+
+      html {
+        background: var(--bg);
+        scroll-behavior: smooth;
+        -webkit-text-size-adjust: 100%;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      body {
+        font-family: var(--font-ui);
+        background: var(--bg);
+        color: var(--fg);
+        min-height: 100dvh;
+        overflow-x: hidden;
+      }
+
+      /* ── #root: full viewport by default ────────── */
+      #root {
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        isolation: isolate;
+      }
+
+      /* ── Loading screen (removed once React mounts) */
+      #app-loader {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: var(--bg);
+        z-index: 9999;
+        transition: opacity .4s ease, visibility .4s ease;
+      }
+      #app-loader.hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+      #app-loader .mark {
+        font-family: var(--font-ui);
+        font-size: clamp(1.1rem, 3vw, 1.5rem);
+        letter-spacing: .25em;
+        text-transform: uppercase;
+        color: var(--fg);
+        opacity: 0;
+        animation: fadeUp .6s .1s ease forwards;
+      }
+      #app-loader .mark span {
+        color: var(--accent);
+      }
+      #app-loader .bar {
+        margin-top: 2rem;
+        width: clamp(80px, 20vw, 160px);
+        height: 1px;
+        background: var(--muted);
+        position: relative;
+        overflow: hidden;
+      }
+      #app-loader .bar::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: var(--accent);
+        transform: translateX(-100%);
+        animation: slide .9s .2s cubic-bezier(.4,0,.2,1) forwards;
+      }
+
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes slide {
+        to { transform: translateX(0); }
+      }
+
+      /* ── Scrollbar — themed ──────────────────────── */
+      ::-webkit-scrollbar              { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-track        { background: transparent; }
+      ::-webkit-scrollbar-thumb        { background: var(--muted); border-radius: 99px; }
+      ::-webkit-scrollbar-thumb:hover  { background: var(--accent); }
+
+      /* ── Focus-visible ring ──────────────────────── */
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+        border-radius: var(--radius);
+      }
+
+      /* ── Selection ───────────────────────────────── */
+      ::selection {
+        background: var(--accent);
+        color: var(--bg);
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <!-- ─────────────────────────────────────────────
+         INSTANT LOADING SCREEN
+         Visible on first paint; React removes it
+         via JS once the app is ready to render.
+    ───────────────────────────────────────────── -->
+    <div id="app-loader" role="status" aria-label="Loading application">
+      <div>
+        <p class="mark">Ibrahima Baby</p>
+        <div class="bar" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────────────────────
+         REACT MOUNT POINT
+    ───────────────────────────────────────────── -->
+    <div id="root"></div>
+
+    <!-- ─────────────────────────────────────────────
+         NO-SCRIPT FALLBACK
+    ───────────────────────────────────────────── -->
+    <noscript>
+      <style>
+        #app-loader { display: none; }
+        body { font-family: monospace; padding: 2rem; }
+      </style>
+      <p>This application requires JavaScript. Please enable it in your browser settings.</p>
+    </noscript>
+
+    <!-- ─────────────────────────────────────────────
+         LOADER DISMISSAL SCRIPT (inline, ~200 bytes)
+         Removes the loading screen the moment React
+         calls ReactDOM.createRoot().render().
+         Works by observing #root for child additions.
+    ───────────────────────────────────────────── -->
+    <script>
+      (function () {
+        var loader = document.getElementById('app-loader');
+        if (!loader) return;
+
+        var observer = new MutationObserver(function (mutations) {
+          for (var i = 0; i < mutations.length; i++) {
+            if (mutations[i].addedNodes.length) {
+              loader.classList.add('hidden');
+              observer.disconnect();
+              // clean up from DOM after transition
+              loader.addEventListener('transitionend', function () {
+                loader.remove();
+              }, { once: true });
+              break;
+            }
+          }
+        });
+
+        observer.observe(document.getElementById('root'), { childList: true });
+
+        // Hard fallback: kill loader after 6 s regardless
+        setTimeout(function () {
+          loader.classList.add('hidden');
+          observer.disconnect();
+        }, 6000);
+      })();
+    </script>
+
+    <!-- ─────────────────────────────────────────────
+         APP ENTRY — Vite / React
+    ───────────────────────────────────────────── -->
+    <script type="module" src="/src/main.jsx"></script>
+
+  </body>
+</html>
