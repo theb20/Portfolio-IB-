@@ -14,10 +14,19 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_APP_ID,
   measurementId: import.meta.env.VITE_MEASUREMENT_ID,
 }
-const app = initializeApp(firebaseConfig)
-isSupported().then((ok) => {
-  if (ok) getAnalytics(app)
-}).catch(() => {})
+if (
+  firebaseConfig.apiKey &&
+  firebaseConfig.authDomain &&
+  firebaseConfig.projectId &&
+  firebaseConfig.appId
+) {
+  const app = initializeApp(firebaseConfig)
+  isSupported()
+    .then((ok) => {
+      if (ok) getAnalytics(app)
+    })
+    .catch(() => {})
+}
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
