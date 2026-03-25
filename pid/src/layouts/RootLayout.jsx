@@ -1,6 +1,8 @@
 import { Outlet, ScrollRestoration } from 'react-router'
 import SiteFooter from '../site/SiteFooter.jsx'
 import SiteHeader from '../site/SiteHeader.jsx'
+import CookieConsent from '../site/CookieConsent.jsx'
+import RouteTransitionOverlay from '../site/RouteTransitionOverlay.jsx'
 
 export default function RootLayout() {
   return (
@@ -11,6 +13,8 @@ export default function RootLayout() {
         <Outlet />
       </main>
       <SiteFooter />
+      <RouteTransitionOverlay />
+      <CookieConsent />
     </div>
   )
 }

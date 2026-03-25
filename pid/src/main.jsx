@@ -1,9 +1,10 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { initializeApp } from 'firebase/app'
-import { getAnalytics, isSupported } from 'firebase/analytics'
 import './index.css'
 import App from './App.jsx'
+import { getConsent } from './lib/consent.js'
+import { enableAnalytics } from './lib/firebaseAnalytics.js'
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_API_KEY,
@@ -21,11 +22,10 @@ if (
   firebaseConfig.appId
 ) {
   const app = initializeApp(firebaseConfig)
-  isSupported()
-    .then((ok) => {
-      if (ok) getAnalytics(app)
-    })
-    .catch(() => {})
+  if (getConsent() === 'accepted') {
+    enableAnalytics(app)
+  }
+  globalThis.__firebaseApp = app
 }
 
 createRoot(document.getElementById('root')).render(
@@ -33,11 +33,3 @@ createRoot(document.getElementById('root')).render(
     <App />
   </StrictMode>,
 )
-
-const loader = document.getElementById('app-loader')
-if (loader) {
-  loader.classList.add('hidden')
-  loader.addEventListener('transitionend', () => {
-    loader.remove()
-  }, { once: true })
-}

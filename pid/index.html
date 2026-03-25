@@ -60,6 +60,7 @@
     <link rel="preconnect"    href="https://fonts.googleapis.com" />
     <link rel="preconnect"    href="https://fonts.gstatic.com" crossorigin />
     <link rel="dns-prefetch"  href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
 
     <!-- ═══════════════════════════════════════════════
          PERFORMANCE — MODULE PRELOAD
@@ -226,16 +227,23 @@
       (function () {
         var loader = document.getElementById('app-loader');
         if (!loader) return;
+        var firstVisit = !sessionStorage.getItem('seenLoader');
+        var minDelay = firstVisit ? 1200 : 0;
+        var start = Date.now();
 
         var observer = new MutationObserver(function (mutations) {
           for (var i = 0; i < mutations.length; i++) {
             if (mutations[i].addedNodes.length) {
-              loader.classList.add('hidden');
-              observer.disconnect();
-              // clean up from DOM after transition
-              loader.addEventListener('transitionend', function () {
-                loader.remove();
-              }, { once: true });
+              var elapsed = Date.now() - start;
+              var wait = Math.max(0, minDelay - elapsed);
+              setTimeout(function () {
+                loader.classList.add('hidden');
+                observer.disconnect();
+                loader.addEventListener('transitionend', function () {
+                  loader.remove();
+                }, { once: true });
+                if (firstVisit) sessionStorage.setItem('seenLoader', '1');
+              }, wait);
               break;
             }
           }
