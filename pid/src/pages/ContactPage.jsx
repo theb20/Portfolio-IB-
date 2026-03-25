@@ -2,22 +2,26 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Container from '../ui/Container.jsx'
 
+const MotionDiv = motion.div
+
 // ── Typewriter hook ──
 function useTypewriter(text, speed = 48, delay = 400) {
   const [displayed, setDisplayed] = useState('')
   useEffect(() => {
     let i = 0
-    let timeout
-    const start = setTimeout(() => {
-      const interval = setInterval(() => {
+    let intervalId
+    const startId = setTimeout(() => {
+      intervalId = setInterval(() => {
         setDisplayed(text.slice(0, i + 1))
         i++
-        if (i >= text.length) clearInterval(interval)
+        if (i >= text.length) clearInterval(intervalId)
       }, speed)
-      return () => clearInterval(interval)
     }, delay)
-    return () => clearTimeout(start)
-  }, [text])
+    return () => {
+      clearTimeout(startId)
+      if (intervalId) clearInterval(intervalId)
+    }
+  }, [delay, speed, text])
   return displayed
 }
 
@@ -396,6 +400,26 @@ export default function ContactPage() {
                     <span className="text-white/60 text-[14px] font-light">{row.value}</span>
                   </div>
                 ))}
+              </div>
+
+              <div>
+                <p className="text-white/20 text-[10px] uppercase tracking-[0.22em] mb-5">
+                  Réseaux
+                </p>
+                <div className="flex flex-col gap-4">
+                  {socials.map((s) => (
+                    <a
+                      key={s.label}
+                      href={s.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="social-link"
+                    >
+                      <span className="text-white/25">→</span>
+                      {s.label}
+                    </a>
+                  ))}
+                </div>
               </div>
             </motion.div>
           </div>

@@ -4,6 +4,8 @@ import { projects } from '../data/projects.js'
 import Container from '../ui/Container.jsx'
 import NumberedGridSection from '../sections/projects/NumberedGridSection.jsx'
 
+const MotionDiv = motion.div
+
 // Framer variants
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },

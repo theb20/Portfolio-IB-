@@ -11,7 +11,6 @@ function FilmGrain() {
     if (!canvas) return
     const ctx = canvas.getContext('2d')
     let frame
-    let t = 0
 
     function resize() {
       canvas.width  = window.innerWidth
@@ -24,7 +23,6 @@ function FilmGrain() {
       const { width, height } = canvas
       const img = ctx.createImageData(width, height)
       const d   = img.data
-      t++
       // sparse random grain — only ~18 % of pixels get noise
       for (let i = 0; i < d.length; i += 4) {
         if (Math.random() > 0.18) continue
@@ -82,6 +80,7 @@ function CountdownReel({ onDone }) {
   if (index >= COUNTDOWN.length) return null
 
   const num = COUNTDOWN[index]
+  const frameNo = index * 24 + ((index * 17 + 11) % 24)
 
   return (
     <div
@@ -138,7 +137,7 @@ function CountdownReel({ onDone }) {
 
       {/* frame counter bottom */}
       <div className="absolute bottom-12 left-1/2 -translate-x-1/2 font-mono text-xs tracking-[0.4em] text-white/30 uppercase">
-        Frame {String(index * 24 + Math.floor(Math.random() * 24)).padStart(4, '0')}
+        Frame {String(frameNo).padStart(4, '0')}
       </div>
     </div>
   )

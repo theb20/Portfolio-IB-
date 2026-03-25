@@ -2,6 +2,8 @@ import { useEffect, useRef } from 'react'
 import { motion, useInView, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import Container from '../ui/Container.jsx'
 
+const MotionDiv = motion.div
+
 /* ─── constants ─────────────────────────────────────── */
 const EASE = [0.16, 1, 0.3, 1]
 const GOLD = '#c8a84b'

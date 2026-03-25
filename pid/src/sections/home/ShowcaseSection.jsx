@@ -139,12 +139,12 @@ export default function ShowcaseSection() {
                 </span>
               </div>
 
-              {/* Chips — flex-wrap, elles ne débordent plus */}
-              <div className="flex flex-wrap gap-2">
+              {/* Chips — scroll horizontal sur mobile, wrap sur desktop */}
+              <div className="-mx-2 flex gap-2 overflow-x-auto px-2 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
                 {chips.map((c) => (
                   <span
                     key={c}
-                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70"
+                    className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70"
                   >
                     {c}
                   </span>
@@ -155,8 +155,8 @@ export default function ShowcaseSection() {
             {/* ── RIGHT ── */}
             <div className="min-w-0 lg:col-span-5">
 
-              {/* Stats — 3 colonnes fixes sur mobile, 1 colonne sur lg */}
-              <div className="grid grid-cols-3 gap-2 sm:gap-3 lg:grid-cols-1 lg:gap-4">
+              {/* Stats — pile sur mobile, 3 colonnes sur sm, sidebar sur lg */}
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-3 lg:grid-cols-1 lg:gap-4">
                 {stats.map((s, i) => (
                   <MotionDiv
                     key={s.label}
@@ -168,7 +168,7 @@ export default function ShowcaseSection() {
                       delay: i * 0.08,
                       ease: [0.16, 1, 0.3, 1],
                     }}
-                    className="rounded-2xl border border-white/10 bg-white/5 p-3 sm:p-5"
+                    className="rounded-2xl border border-white/10 bg-white/5 p-5"
                     whileHover={
                       prefersReducedMotion
                         ? {}
