@@ -58,6 +58,13 @@ router.get('/google/start', (req, res) => {
   }
 
   const url = buildGoogleAuthUrl({ state })
+
+  // Si la requête vient d'un appel AJAX (pas d'une navigation browser),
+  // retourner l'URL en JSON pour que le frontend navigue lui-même
+  const acceptsJson = req.headers?.accept?.includes('application/json')
+  if (acceptsJson) {
+    return res.json({ url })
+  }
   return res.redirect(url)
 })
 
