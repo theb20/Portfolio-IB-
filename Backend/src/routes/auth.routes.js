@@ -23,7 +23,7 @@ function buildGoogleAuthUrl({ state }) {
 function cookieOptions() {
   return {
     httpOnly: true,
-    sameSite: 'lax',
+    sameSite: env.nodeEnv === 'production' ? 'none' : 'lax',
     secure: env.nodeEnv === 'production',
     path: '/',
   }
@@ -127,7 +127,7 @@ router.get('/me', (req, res) => {
   }
 })
 
-router.post('/logout', (req, res) => {
+router.post('/logout', (_req, res) => {
   res.clearCookie('pid_session', { path: '/' })
   res.json({ ok: true })
 })
