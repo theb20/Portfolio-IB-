@@ -15,7 +15,7 @@ const router = Router()
 function boSessionOptions() {
   return {
     httpOnly: true,
-    sameSite: 'lax',
+    sameSite: env.nodeEnv === 'production' ? 'none' : 'lax',
     secure: env.nodeEnv === 'production',
     path: '/',
     maxAge: 12 * 60 * 60 * 1000, // 12h
