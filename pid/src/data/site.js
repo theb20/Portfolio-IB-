@@ -7,5 +7,7 @@ export const navItems = [
   { to: '/', label: 'Accueil' },
   { to: '/projects', label: 'Projets' },
   { to: '/about', label: 'À propos' },
+  { to: '/shop', label: 'Location' },
   { to: '/contact', label: 'Contact' },
+  
 ]

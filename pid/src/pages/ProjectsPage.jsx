@@ -1,6 +1,8 @@
 import { Link } from 'react-router'
 import { motion } from 'framer-motion'
-import { projects } from '../data/projects.js'
+import { useEffect, useMemo, useState } from 'react'
+import { projects as fallbackProjects } from '../data/projects.js'
+import { fetchProjects } from '../lib/api.js'
 import Container from '../ui/Container.jsx'
 import NumberedGridSection from '../sections/projects/NumberedGridSection.jsx'
 
@@ -17,8 +19,25 @@ const stagger = {
 }
 
 export default function ProjectsPage() {
-  // Sépare le projet hero (premier) du reste
-  const [hero, ...rest] = projects
+  const [projects, setProjects] = useState(fallbackProjects)
+
+  useEffect(() => {
+    let mounted = true
+    fetchProjects()
+      .then((items) => {
+        if (!mounted) return
+        if (Array.isArray(items) && items.length) setProjects(items)
+      })
+      .catch(() => {})
+    return () => {
+      mounted = false
+    }
+  }, [])
+
+  const { hero, rest } = useMemo(() => {
+    const [first, ...others] = projects
+    return { hero: first ?? null, rest: others }
+  }, [projects])
 
   return (
     <>
@@ -138,7 +157,7 @@ export default function ProjectsPage() {
                 {/* Image hero pleine largeur */}
                 <div className="img-zoom relative overflow-hidden rounded-xl aspect-[16/7] mb-6">
                   <img
-                    src={hero.thumbnail || '/og-image.png'}
+                    src={hero.image || hero.thumbnail || '/og-image.png'}
                     alt={hero.title}
                     className="w-full h-full object-cover"
                   />
@@ -221,7 +240,7 @@ export default function ProjectsPage() {
                   <div className="col-span-3 sm:col-span-2">
                     <div className="img-zoom overflow-hidden rounded-lg aspect-[4/3]">
                       <img
-                        src={project.thumbnail || '/og-image.png'}
+                        src={project.image || project.thumbnail || '/og-image.png'}
                         alt={project.title}
                         className="w-full h-full object-cover"
                       />

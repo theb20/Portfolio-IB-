@@ -1,36 +1,40 @@
 import { motion, useReducedMotion } from 'framer-motion'
-import { useMemo, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Container from '../../ui/Container.jsx'
+import { fetchContent } from '../../lib/api.js'
 
 const MotionDiv = motion.div
+
+const DEFAULT = {
+  heading: 'Une direction.\nUn rythme.\nUne signature.',
+  body: "Je produis des images au rendu cinématographique — documentaires, clips, films de marque. Chaque projet est pensé comme une scène : intention, lumière, mouvement, et montage.",
+  chips: ['Montage', 'Cadrage', 'Documentaire', 'Clip', 'Film de marque', 'Direction artistique', 'Sound design', 'Sous-titres', 'Delivery'],
+  stats: [
+    { value: '60+', label: 'Projets livrés' },
+    { value: '4 ans', label: "D'expérience" },
+    { value: '100%', label: 'Focus' },
+  ],
+}
 
 export default function ShowcaseSection() {
   const prefersReducedMotion = useReducedMotion()
   const cardRef = useRef(null)
+  const [content, setContent] = useState(DEFAULT)
 
-  const chips = useMemo(
-    () => [
-      'Montage',
-      'Cadrage',
-      'Documentaire',
-      'Clip',
-      'Film de marque',
-      'Direction artistique',
-      'Sound design',
-      'Sous-titres',
-      'Delivery',
-    ],
-    [],
-  )
+  useEffect(() => {
+    let mounted = true
+    fetchContent('showcase')
+      .then((data) => {
+        if (!mounted) return
+        if (data) setContent({ ...DEFAULT, ...data })
+      })
+      .catch(() => {})
+    return () => { mounted = false }
+  }, [])
 
-  const stats = useMemo(
-    () => [
-      { value: '60+', label: 'Projets livrés' },
-      { value: '4 ans', label: "D'expérience" },
-      { value: '100%', label: 'Focus' },
-    ],
-    [],
-  )
+  const chips = content.chips
+  const stats = content.stats
+  const headingLines = content.heading.split('\n')
 
   return (
     <section className="relative w-full overflow-hidden py-10 sm:py-8">
@@ -106,18 +110,14 @@ export default function ShowcaseSection() {
 
               {/* Heading */}
               <h2 className="text-[clamp(26px,7vw,72px)] font-semibold leading-[0.92] tracking-tight text-white">
-                Une direction.
-                <br />
-                Un rythme.
-                <br />
-                Une signature.
+                {headingLines.map((line, i) => (
+                  <span key={i}>{line}{i < headingLines.length - 1 ? <br /> : null}</span>
+                ))}
               </h2>
 
-              {/* Body — break-words corrige l'overflow du texte */}
+              {/* Body */}
               <p className="break-words text-sm leading-relaxed text-white/65 sm:text-base lg:text-lg">
-                Je produis des images au rendu cinématographique — documentaires,
-                clips, films de marque. Chaque projet est pensé comme une scène :
-                intention, lumière, mouvement, et montage.
+                {content.body}
               </p>
 
               {/* CTAs */}

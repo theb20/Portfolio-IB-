@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, useInView, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import Container from '../ui/Container.jsx'
+import { fetchContent } from '../lib/api.js'
 
 const MotionDiv = motion.div
 
@@ -142,8 +143,67 @@ const Gear = ({ label, value }) => (
   </div>
 )
 
+/* ─── Defaults ──────────────────────────────────────── */
+const DEFAULT = {
+  hero: {
+    title: 'Vidéaste\n&\nMachiniste',
+    year: '2025',
+    meta: [['Spécialité', 'Cadrage · Montage'], ['Secteur', 'Influence · Spectacle'], ['Base', 'France'], ['Statut', 'Freelance']],
+  },
+  bio: {
+    para1: "Vidéaste freelance centré sur le cadrage et le montage de contenus pour créateurs — clips, documentaires, films de marque.",
+    para2: "En parallèle, j'interviens comme assistant sur des boîtes de production et comme machiniste du spectacle dans des théâtres et opéras — deux univers qui nourrissent la même obsession du cadre, de la lumière, du rythme.",
+    quote: "Deux univers, une même obsession du cadre.",
+    note: "↳ Les photographies prises en théâtre visibles dans le portfolio sont issues de ces prestations scéniques.",
+  },
+  stats: [
+    { value: '60+', label: 'Projets livrés' },
+    { value: '4 ans', label: "D'expérience" },
+    { value: '2', label: 'Univers métiers' },
+  ],
+  services: [
+    { title: 'Montage vidéo', desc: 'Long format documentaire, court format Reels / Shorts, film de marque, clip artistique.' },
+    { title: 'Cadrage & captation', desc: "Prise de vue solo ou en équipe. Direction d'image pour influenceurs et créateurs de contenu." },
+    { title: 'Machiniste plateau', desc: 'Spectacle vivant, théâtre, opéra. Gestion des décors, cintres et équipements scéniques.' },
+    { title: 'Post-production', desc: 'Sound design, sous-titres, étalonnage, delivery multi-plateforme.' },
+  ],
+  timeline: [
+    { year: '2024–présent', role: 'Vidéaste freelance — contenus créateurs', note: 'Captation · Montage · Direction artistique' },
+    { year: '2022–présent', role: 'Machiniste du spectacle', note: 'Théâtres · Opéras · Salles de spectacle' },
+    { year: '2021–2024', role: 'Assistant production vidéo', note: 'Boîtes de prod — tournages institutionnels' },
+    { year: '2020', role: 'Premiers projets indépendants', note: 'Clips · Documentaires courts' },
+  ],
+  gear: [
+    ['Caméra', 'Sony FX3 / A7 IV'],
+    ['Optiques', 'GM 24 · 50 · 85mm'],
+    ['Stabilisation', 'DJI RS3 Pro'],
+    ['Montage', 'Premiere · DaVinci'],
+    ['Son', 'Rode NTG5 · Zoom F6'],
+    ['Delivery', 'Frame.io · WeTransfer'],
+  ],
+  cta: {
+    heading: 'Un projet en tête ?',
+    body: 'Disponible pour missions freelance, collaborations régulières ou tournages ponctuels.',
+    video: '/vds/og1.mp4',
+    buttonLabel: 'Me contacter',
+  },
+}
+
 /* ════════════════════════════════════════════════════ */
 export default function AboutPage() {
+  const [c, setC] = useState(DEFAULT)
+
+  useEffect(() => {
+    let mounted = true
+    fetchContent('about')
+      .then((data) => {
+        if (!mounted || !data) return
+        setC((prev) => ({ ...prev, ...data }))
+      })
+      .catch(() => {})
+    return () => { mounted = false }
+  }, [])
+
   return (
     <div className="relative px-4 min-h-screen overflow-x-hidden" style={{ background: BG }}>
       <Grain />
@@ -170,18 +230,19 @@ export default function AboutPage() {
             <div className="mb-6 flex items-center gap-3">
               <div className="h-px w-8" style={{ background: GOLD }} />
               <span className="font-mono text-[9px] uppercase tracking-[0.55em] text-white/25">
-                Dossier artistique · 2025
+                Dossier artistique · {c.hero.year}
               </span>
             </div>
           </Reveal>
 
           <Reveal delay={0.07}>
             <h1 className="text-[clamp(60px,13vw,140px)] font-black uppercase leading-[0.82] tracking-[-0.03em] text-white">
-              Vidéaste
-              <br />
-              <span style={{ color: `${GOLD}` }}>&amp;</span>
-              <br />
-              Machiniste
+              {c.hero.title.split('\n').map((line, i, arr) => (
+                <span key={i}>
+                  {line === '&' ? <span style={{ color: GOLD }}>&amp;</span> : line}
+                  {i < arr.length - 1 ? <br /> : null}
+                </span>
+              ))}
             </h1>
           </Reveal>
 
@@ -191,12 +252,7 @@ export default function AboutPage() {
               className="mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-xl sm:grid-cols-4"
               style={{ border: '1px solid rgba(255,255,255,0.07)', background: 'rgba(255,255,255,0.07)' }}
             >
-              {[
-                ['Spécialité', 'Cadrage · Montage'],
-                ['Secteur',    'Influence · Spectacle'],
-                ['Base',       'France'],
-                ['Statut',     'Freelance'],
-              ].map(([k, v]) => (
+              {c.hero.meta.map(([k, v]) => (
                 <div key={k} className="px-5 py-4" style={{ background: BG }}>
                   <p className="font-mono text-[9px] uppercase tracking-[0.4em] text-white/25">{k}</p>
                   <p className="mt-1 text-sm font-medium text-white/70">{v}</p>
@@ -212,45 +268,24 @@ export default function AboutPage() {
           <div className="grid gap-10 lg:grid-cols-[1fr_320px] lg:items-start">
             <div className="space-y-5">
               <Reveal delay={0.04}>
-                <p className="text-lg leading-[1.8] text-white/75 sm:text-xl">
-                  Vidéaste freelance centré sur le{' '}
-                  <span className="text-white">cadrage</span> et le{' '}
-                  <span className="text-white">montage</span> de contenus pour
-                  créateurs — clips, documentaires, films de marque.
-                </p>
+                <p className="text-lg leading-[1.8] text-white/75 sm:text-xl">{c.bio.para1}</p>
               </Reveal>
               <Reveal delay={0.09}>
-                <p className="text-base leading-[1.85] text-white/45">
-                  En parallèle, j'interviens comme assistant sur des boîtes de
-                  production et comme{' '}
-                  <em className="not-italic text-white/65">machiniste du spectacle</em>{' '}
-                  dans des théâtres et opéras — deux univers qui nourrissent la même
-                  obsession du cadre, de la lumière, du rythme.
-                </p>
+                <p className="text-base leading-[1.85] text-white/45">{c.bio.para2}</p>
               </Reveal>
-
-              {/* pull quote */}
               <Reveal delay={0.14}>
                 <div className="py-2 pl-5" style={{ borderLeft: `2px solid ${GOLD}` }}>
-                  <p className="text-base italic leading-snug text-white/55 sm:text-lg">
-                    "Deux univers, une même obsession du cadre."
-                  </p>
+                  <p className="text-base italic leading-snug text-white/55 sm:text-lg">"{c.bio.quote}"</p>
                 </div>
               </Reveal>
-
               <Reveal delay={0.18}>
-                <p className="font-mono text-[11px] leading-relaxed text-white/22">
-                  ↳ Les photographies prises en théâtre visibles dans le portfolio
-                  sont issues de ces prestations scéniques.
-                </p>
+                <p className="font-mono text-[11px] leading-relaxed text-white/22">{c.bio.note}</p>
               </Reveal>
             </div>
-
-            {/* stats */}
             <div className="grid grid-cols-1 gap-3">
-              <Stat value="60+" label="Projets livrés"  delay={0.1}  />
-              <Stat value="4 ans" label="D'expérience"  delay={0.16} />
-              <Stat value="2"     label="Univers métiers" delay={0.22} />
+              {c.stats.map((s, i) => (
+                <Stat key={s.label} value={s.value} label={s.label} delay={0.1 + i * 0.06} />
+              ))}
             </div>
           </div>
         </section>
@@ -259,12 +294,9 @@ export default function AboutPage() {
         <section className="mb-24">
           <Tag n={2} label="Prestations" />
           <div className="divide-y" style={{ borderTop: '1px solid rgba(255,255,255,0.07)', borderColor: 'rgba(255,255,255,0.07)' }}>
-            {[
-              { num:1, title:'Montage vidéo',       desc:'Long format documentaire, court format Reels / Shorts, film de marque, clip artistique.',          delay:0.04 },
-              { num:2, title:'Cadrage & captation',  desc:"Prise de vue solo ou en équipe. Direction d'image pour influenceurs et créateurs de contenu.",    delay:0.08 },
-              { num:3, title:'Machiniste plateau',   desc:'Spectacle vivant, théâtre, opéra. Gestion des décors, cintres et équipements scéniques.',         delay:0.12 },
-              { num:4, title:'Post-production',      desc:'Sound design, sous-titres, étalonnage, delivery multi-plateforme.',                               delay:0.16 },
-            ].map(s => <Service key={s.num} {...s} />)}
+            {c.services.map((s, i) => (
+              <Service key={s.title} num={i + 1} title={s.title} desc={s.desc} delay={0.04 + i * 0.04} />
+            ))}
           </div>
         </section>
 
@@ -272,30 +304,17 @@ export default function AboutPage() {
         <section className="mb-24 grid gap-14 lg:grid-cols-[1fr_300px] lg:items-start">
           <div>
             <Tag n={3} label="Parcours" />
-            {[
-              { year:'2024–présent', role:'Vidéaste freelance — contenus créateurs', note:'Captation · Montage · Direction artistique',  delay:0.05 },
-              { year:'2022–présent', role:'Machiniste du spectacle',                 note:'Théâtres · Opéras · Salles de spectacle',     delay:0.10 },
-              { year:'2021–2024',    role:'Assistant production vidéo',              note:'Boîtes de prod — tournages institutionnels',  delay:0.15 },
-              { year:'2020',         role:'Premiers projets indépendants',           note:'Clips · Documentaires courts',               delay:0.20 },
-            ].map(e => <Entry key={e.year} {...e} />)}
+            {c.timeline.map((e, i) => (
+              <Entry key={e.year} year={e.year} role={e.role} note={e.note} delay={0.05 + i * 0.05} />
+            ))}
           </div>
-
           <div>
             <Tag n={4} label="Équipement" />
             <Reveal delay={0.08}>
               <div className="rounded-2xl px-5 py-2" style={{ border: '1px solid rgba(255,255,255,0.07)', background: 'rgba(255,255,255,0.02)' }}>
-                {[
-                  ['Caméra',        'Sony FX3 / A7 IV'],
-                  ['Optiques',      'GM 24 · 50 · 85mm'],
-                  ['Stabilisation', 'DJI RS3 Pro'],
-                  ['Montage',       'Premiere · DaVinci'],
-                  ['Son',           'Rode NTG5 · Zoom F6'],
-                  ['Delivery',      'Frame.io · WeTransfer'],
-                ].map(([k, v]) => <Gear key={k} label={k} value={v} />)}
+                {c.gear.map(([k, v]) => <Gear key={k} label={k} value={v} />)}
               </div>
             </Reveal>
-
-            {/* clap SVG */}
             <Reveal delay={0.18}>
               <svg viewBox="0 0 200 140" className="mt-8 w-full opacity-[0.07]" aria-hidden="true">
                 <rect x="2" y="48" width="196" height="90" rx="4" fill="none" stroke="white" strokeWidth="1.5"/>
@@ -315,44 +334,27 @@ export default function AboutPage() {
         {/* ══ CTA BAND ══════════════════════════════ */}
         <Reveal>
           <section className="relative overflow-hidden rounded-3xl p-8 sm:p-12" style={{ border: `1px solid ${GOLD}22`, background: `${GOLD}06` }}>
-
-            {/* VIDEO BACKGROUND */}
-    <video
-      className="absolute inset-0 h-full w-full object-cover"
-      src="/vds/og1.mp4" 
-      autoPlay
-      loop
-      muted
-      playsInline
-    />
-
-            {/* diagonal hatch */}
-            <div
-              className="pointer-events-none absolute inset-0"
-              style={{ backgroundImage: `repeating-linear-gradient(135deg, ${GOLD}08 0px, ${GOLD}08 1px, transparent 1px, transparent 32px)` }}
-              aria-hidden="true"
-            />
-            {/* glow spot */}
-            <div
-              className="pointer-events-none absolute -top-20 left-1/4 h-64 w-64 rounded-full blur-[80px]"
-              style={{ background: `${GOLD}18` }}
-              aria-hidden="true"
-            />
+            {c.cta.video && (
+              <video
+                className="absolute inset-0 h-full w-full object-cover"
+                src={c.cta.video}
+                autoPlay loop muted playsInline
+              />
+            )}
+            <div className="pointer-events-none absolute inset-0" style={{ backgroundImage: `repeating-linear-gradient(135deg, ${GOLD}08 0px, ${GOLD}08 1px, transparent 1px, transparent 32px)` }} aria-hidden="true" />
+            <div className="pointer-events-none absolute -top-20 left-1/4 h-64 w-64 rounded-full blur-[80px]" style={{ background: `${GOLD}18` }} aria-hidden="true" />
             <div className="relative">
               <Tag n={5} label="Contact" />
               <h2 className="mb-3 text-[clamp(28px,5vw,56px)] font-black uppercase leading-tight tracking-tight text-white">
-                Un projet en tête ?
+                {c.cta.heading}
               </h2>
-              <p className="mb-8 max-w-md text-sm leading-relaxed text-white/40">
-                Disponible pour missions freelance, collaborations régulières
-                ou tournages ponctuels.
-              </p>
+              <p className="mb-8 max-w-md text-sm leading-relaxed text-white/40">{c.cta.body}</p>
               <a
                 href="/contact"
                 className="group inline-flex items-center gap-3 rounded-full px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-black transition-all duration-300 hover:opacity-90"
                 style={{ background: GOLD }}
               >
-                Me contacter
+                {c.cta.buttonLabel}
                 <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
               </a>
             </div>

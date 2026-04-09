@@ -1,46 +1,42 @@
 import { Link } from 'react-router'
 import { AnimatePresence, motion } from 'framer-motion'
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Container from '../../ui/Container.jsx'
+import { fetchProjects } from '../../lib/api.js'
 
 const MotionDiv = motion.div
 
-export default function HighlightsSection() {
-  const projects = useMemo(
-    () => [
-      {
-        src: '/og-image.png',
-        title: 'Lumière Brute',
-        category: 'Documentaire',
-        year: '2024',
-        to: '/projects/lumiere-brute',
-      },
-      {
-        src: '/logo-ib.png',
-        title: 'Silences',
-        category: 'Court-métrage',
-        year: '2024',
-        to: '/projects/silences',
-      },
-      {
-        src: '/assets/hero.png',
-        title: 'Mécanique',
-        category: 'Clip',
-        year: '2023',
-        to: '/projects/mecanique',
-      },
-      {
-        src: '/og-image.png',
-        title: 'Fragment III',
-        category: 'Publicité',
-        year: '2023',
-        to: '/projects/fragment',
-      },
-    ],
-    [],
-  )
+const FALLBACK_PROJECTS = [
+  { src: '/og-image.png', title: 'Lumière Brute', category: 'Documentaire', year: '2024', to: '/projects/lumiere-brute' },
+  { src: '/logo-ib.png', title: 'Silences', category: 'Court-métrage', year: '2024', to: '/projects/silences' },
+  { src: '/assets/hero.png', title: 'Mécanique', category: 'Clip', year: '2023', to: '/projects/mecanique' },
+  { src: '/og-image.png', title: 'Fragment III', category: 'Publicité', year: '2023', to: '/projects/fragment' },
+]
 
+export default function HighlightsSection() {
+  const [projects, setProjects] = useState(FALLBACK_PROJECTS)
   const [active, setActive] = useState(0)
+
+  useEffect(() => {
+    let mounted = true
+    fetchProjects()
+      .then((items) => {
+        if (!mounted) return
+        if (Array.isArray(items) && items.length) {
+          setProjects(
+            items.slice(0, 4).map((p) => ({
+              src: p.image || p.thumbnail || '/og-image.png',
+              title: p.title,
+              category: p.role ?? p.tags?.[0] ?? '',
+              year: String(p.year ?? ''),
+              to: `/projects/${p.slug}`,
+            }))
+          )
+        }
+      })
+      .catch(() => {})
+    return () => { mounted = false }
+  }, [])
   const current = projects[Math.min(active, projects.length - 1)]
 
   return (

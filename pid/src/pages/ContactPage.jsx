@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Container from '../ui/Container.jsx'
+import { submitContactMessage } from '../lib/api.js'
 
 const MotionDiv = motion.div
 
@@ -233,10 +234,28 @@ export default function ContactPage() {
   const title     = useTypewriter('Contact', 60, 500)
   const subtitle  = useTypewriter('Parlons-en.', 50, 1200)
   const [sent, setSent] = useState(false)
+  const [submitError, setSubmitError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
-    setSent(true)
+    setSubmitError('')
+    const formData = new FormData(e.currentTarget)
+    const payload = {
+      name: String(formData.get('name') ?? '').trim(),
+      email: String(formData.get('email') ?? '').trim(),
+      project: String(formData.get('project') ?? '').trim(),
+      message: String(formData.get('message') ?? '').trim(),
+    }
+    setSubmitting(true)
+    try {
+      await submitContactMessage(payload)
+      setSent(true)
+    } catch {
+      setSubmitError("Impossible d'envoyer le message pour le moment.")
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -365,9 +384,12 @@ export default function ContactPage() {
                       animate={{ opacity: 1 }}
                       transition={{ delay: 1 }}
                     >
-                      <button type="submit" className="submit-btn">
+                      <button type="submit" className="submit-btn" disabled={submitting}>
                         Envoyer le message
                       </button>
+                      {submitError ? (
+                        <p className="mt-4 text-sm text-red-300">{submitError}</p>
+                      ) : null}
                     </motion.div>
                   </motion.form>
                 )}

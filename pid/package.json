@@ -7,12 +7,16 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dev:api": "npm run dev --prefix ../Backend",
+    "dev:backoffice": "npm run dev --prefix ../backoffice"
   },
   "dependencies": {
     "axios": "^1.13.6",
     "firebase": "^12.11.0",
     "framer-motion": "^12.38.0",
+    "lucide": "^1.7.0",
+    "lucide-react": "^1.7.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-router": "^7.13.2",

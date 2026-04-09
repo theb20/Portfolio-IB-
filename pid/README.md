@@ -1,16 +1,73 @@
-# React + Vite
+# Portfolio IB
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Monorepo avec :
+- Frontend principal React/Vite (`/src`)
+- Backend Node.js + Express en ESM modulaire (`/Backend`)
+- Backoffice React dédié (`/backoffice`)
 
-Currently, two official plugins are available:
+## 1) Frontend principal
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+npm install
+npm run dev
+```
 
-## React Compiler
+Variables d’environnement :
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+cp .env.example .env
+```
 
-## Expanding the ESLint configuration
+`VITE_API_URL` pointe vers l’API backend (par défaut `http://localhost:4000/api`).
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 2) Backend API
+
+```bash
+cd Backend
+npm install
+cp .env.example .env
+npm run dev
+```
+
+API disponible sur `http://localhost:4000`.
+
+Routes principales :
+- `GET /api/health`
+- `GET /api/projects`
+- `GET /api/projects/:slug`
+- `POST /api/messages`
+- `GET /api/admin/messages` (header `x-admin-key`)
+- `PATCH /api/admin/messages/:id/status` (header `x-admin-key`)
+- `POST /api/projects` (header `x-admin-key`)
+
+## 3) Base de données MySQL
+
+1. Créer la base et les tables avec :
+
+```bash
+mysql -u root -p < Backend/database/schema.sql
+```
+
+2. Adapter les variables `DB_*` dans `Backend/.env`.
+
+Le backend fonctionne en fallback si MySQL est indisponible (projets par défaut).
+
+## 4) Backoffice React
+
+```bash
+cd backoffice
+npm install
+cp .env.example .env
+npm run dev
+```
+
+Backoffice sur `http://localhost:3100` :
+- Login par clé admin (`ADMIN_API_KEY`)
+- Gestion des messages
+- Création de projets
+
+## Raccourcis utiles depuis la racine
+
+- `npm run dev` : frontend
+- `npm run dev:api` : backend
+- `npm run dev:backoffice` : backoffice

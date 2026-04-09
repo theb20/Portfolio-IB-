@@ -1,6 +1,11 @@
 import { Link, useParams } from 'react-router'
 import { motion } from 'framer-motion'
-import { getProjectBySlug, projects } from '../data/projects.js'
+import { useEffect, useMemo, useState } from 'react'
+import {
+  getProjectBySlug as getFallbackProjectBySlug,
+  projects as fallbackProjects,
+} from '../data/projects.js'
+import { fetchProjectBySlug, fetchProjects } from '../lib/api.js'
 import Container from '../ui/Container.jsx'
 import NotFoundPage from './NotFoundPage.jsx'
 
@@ -17,16 +22,38 @@ const stagger = {
 
 export default function ProjectPage() {
   const { slug } = useParams()
-  const project = getProjectBySlug(slug)
+  const [project, setProject] = useState(() => getFallbackProjectBySlug(slug))
+  const [projects, setProjects] = useState(fallbackProjects)
+
+  useEffect(() => {
+    let mounted = true
+    fetchProjects()
+      .then((items) => {
+        if (!mounted) return
+        if (Array.isArray(items) && items.length) setProjects(items)
+      })
+      .catch(() => {})
+    fetchProjectBySlug(slug)
+      .then((item) => {
+        if (!mounted) return
+        if (item) setProject(item)
+      })
+      .catch(() => {})
+    return () => {
+      mounted = false
+    }
+  }, [slug])
+
+  const suggestions = useMemo(() => {
+    const idx = projects.findIndex((p) => p.slug === slug)
+    if (idx < 0 || !projects.length) return []
+    return [projects[(idx + 1) % projects.length], projects[(idx + 2) % projects.length]].filter(Boolean)
+  }, [projects, slug])
 
   if (!project) return <NotFoundPage />
-
-  // Projets suggérés — les 2 suivants dans le tableau
-  const idx = projects.findIndex((p) => p.slug === slug)
-  const suggestions = [
-    projects[(idx + 1) % projects.length],
-    projects[(idx + 2) % projects.length],
-  ].filter(Boolean)
+  const projectImage = project.image || project.thumbnail || '/og-image.png'
+  const videoLink = project.videoUrl || project.links?.video
+  const btsLink = project.links?.bts
 
   return (
     <>
@@ -77,7 +104,7 @@ export default function ProjectPage() {
           transition={{ duration: 1 }}
         >
           <img
-            src={project.thumbnail || '/og-image.png'}
+            src={projectImage}
             alt={project.title}
             className="w-full h-full object-cover"
             style={{ filter: 'brightness(0.7)' }}
@@ -87,9 +114,9 @@ export default function ProjectPage() {
           <div className="absolute inset-0 bg-gradient-to-t from-[#07100c] via-[rgba(7,16,12,0.3)] to-transparent" />
 
           {/* Bouton play si vidéo */}
-          {project.links?.video && (
+          {videoLink && (
             <a
-              href={project.links.video}
+              href={videoLink}
               target="_blank"
               rel="noreferrer"
               className="play-btn absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
@@ -129,9 +156,9 @@ export default function ProjectPage() {
                 <span className="text-white/20 text-[11px] font-mono">{project.year}</span>
               </div>
               {/* Lien vidéo si dispo */}
-              {project.links?.video && (
+              {videoLink && (
                 <a
-                  href={project.links.video}
+                  href={videoLink}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center gap-2 border border-white/15 text-white/50 text-[11px] uppercase tracking-[0.18em] px-5 py-2.5 rounded-full hover:border-white/40 hover:text-white transition-all duration-300"
@@ -237,11 +264,11 @@ export default function ProjectPage() {
               ))}
 
               {/* Liens externes */}
-              {project.links && Object.keys(project.links).length > 0 && (
+              {(videoLink || btsLink) && (
                 <div className="pt-8 space-y-3">
-                  {project.links.video && (
+                  {videoLink && (
                     <a
-                      href={project.links.video}
+                      href={videoLink}
                       target="_blank"
                       rel="noreferrer"
                       className="flex items-center justify-between border border-white/10 rounded-xl px-5 py-4 hover:border-white/30 transition-all duration-300 group"
@@ -254,9 +281,9 @@ export default function ProjectPage() {
                       </svg>
                     </a>
                   )}
-                  {project.links.bts && (
+                  {btsLink && (
                     <a
-                      href={project.links.bts}
+                      href={btsLink}
                       target="_blank"
                       rel="noreferrer"
                       className="flex items-center justify-between border border-white/10 rounded-xl px-5 py-4 hover:border-white/30 transition-all duration-300 group"
@@ -371,7 +398,7 @@ export default function ProjectPage() {
                 >
                   <div className="sugg-img absolute inset-0">
                     <img
-                      src={p.thumbnail || '/og-image.png'}
+                      src={p.image || p.thumbnail || '/og-image.png'}
                       alt={p.title}
                       className="w-full h-full object-cover"
                       style={{ filter: 'brightness(0.55)' }}

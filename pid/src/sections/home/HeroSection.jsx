@@ -4,8 +4,20 @@ import Button from '../../ui/Button.jsx'
 import Container from '../../ui/Container.jsx'
 import { animations } from '../../config/animations.js'
 import TypeWriter from '../../ui/TypeWriter.jsx'
+import { fetchContent } from '../../lib/api.js'
 
 const MotionDiv = motion.div
+
+const DEFAULT_SLIDES = [
+  {
+    video: '/vds/og4.mp4',
+    poster: '/og-image.png',
+    title: ['Mon secteur', "d'activité"],
+    subtitle: 'Experience bespoke visuals where craft and serene luxury converge.',
+    cta: { label: 'Mon profil →', to: '/about' },
+    duration: 4000,
+  },
+]
 
 export default function HeroSection({
   animate = animations.hero,
@@ -13,21 +25,24 @@ export default function HeroSection({
   slides,
   intervalMs = 6000,
 }) {
+  const [apiSlides, setApiSlides] = useState(null)
+
+  useEffect(() => {
+    let mounted = true
+    fetchContent('hero')
+      .then((data) => {
+        if (!mounted) return
+        if (Array.isArray(data?.slides) && data.slides.length) setApiSlides(data.slides)
+      })
+      .catch(() => {})
+    return () => { mounted = false }
+  }, [])
+
   const heroSlides = useMemo(() => {
     if (Array.isArray(slides) && slides.length) return slides
-    return [
-      
-      {
-        video: '/vds/og4.mp4',
-        poster: '/og-image.png',
-        title: ['Mon secteur', "d'activité"],
-        subtitle:
-          'Experience bespoke visuals where craft and serene luxury converge.',
-        cta: { label: 'Mon profil →', to: '/about' },
-        duration: 4000,
-      },
-    ]
-  }, [slides])
+    if (apiSlides) return apiSlides
+    return DEFAULT_SLIDES
+  }, [slides, apiSlides])
 
   const [active, setActive] = useState(0)
   const slide = heroSlides[active]
