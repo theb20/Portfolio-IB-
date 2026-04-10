@@ -22,7 +22,11 @@ export function userAuth(req, res, next) {
   }
 
   const cookies = parseCookies(req.headers?.cookie)
-  const token = cookies.pid_session
+  const cookieToken = cookies.pid_session
+  const authHeader = req.headers?.authorization ?? ''
+  const bearerToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null
+  const token = cookieToken || bearerToken
+
   if (!token) return res.status(401).json({ error: 'Non authentifié' })
 
   try {

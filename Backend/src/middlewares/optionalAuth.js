@@ -4,18 +4,17 @@ import { env } from '../config/env.js'
 export function optionalAuth(req, _res, next) {
   if (env.jwtSecret) {
     const cookies = req.cookies ?? {}
-    const token = cookies.pid_session
-    console.log('[optionalAuth] cookie pid_session:', token ? 'présent' : 'absent')
+    const cookieToken = cookies.pid_session
+    const authHeader = req.headers?.authorization ?? ''
+    const bearerToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null
+    const token = cookieToken || bearerToken
     if (token) {
       try {
         req.user = jwt.verify(token, env.jwtSecret)
-        console.log('[optionalAuth] user décodé:', req.user?.email)
-      } catch (err) {
-        console.warn('[optionalAuth] token invalide:', err?.message)
+      } catch {
+        // token invalide — on continue sans user
       }
     }
-  } else {
-    console.warn('[optionalAuth] JWT_SECRET non configuré')
   }
   next()
 }

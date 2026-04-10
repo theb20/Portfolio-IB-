@@ -110,13 +110,16 @@ router.get('/google/callback', async (req, res) => {
     }
 
     const token = jwt.sign(sessionPayload, env.jwtSecret, { expiresIn: '7d' })
+    // Cookie httpOnly pour les navigateurs qui l'acceptent en cross-origin
     res.cookie('pid_session', token, { ...cookieOptions(), maxAge: 7 * 24 * 60 * 60 * 1000 })
     res.clearCookie('oauth_state', { path: '/' })
     res.clearCookie('oauth_next', { path: '/' })
 
+    // Passer aussi le token dans l'URL (fragment) pour les navigateurs qui bloquent les cookies tiers
     const fallbackNext = `${env.frontendUrl.replace(/\/$/, '')}/checkout?auth=google`
-    const next = typeof nextCookie === 'string' && isAllowedNext(nextCookie) ? nextCookie : fallbackNext
-    return res.redirect(next)
+    const nextBase = typeof nextCookie === 'string' && isAllowedNext(nextCookie) ? nextCookie : fallbackNext
+    const separator = nextBase.includes('?') ? '&' : '?'
+    return res.redirect(`${nextBase}${separator}_token=${encodeURIComponent(token)}`)
   } catch (error) {
     return res.status(401).json({ error: 'Connexion Google échouée' })
   }
@@ -125,9 +128,14 @@ router.get('/google/callback', async (req, res) => {
 router.get('/me', (req, res) => {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
   res.setHeader('Pragma', 'no-cache')
-  const token = req.cookies?.pid_session
-  if (!token) return res.json({ user: null })
   if (!env.jwtSecret) return res.json({ user: null })
+  // 1. Cookie httpOnly (same-origin ou navigateurs qui acceptent les cookies tiers)
+  // 2. Authorization header (Bearer token — fallback pour les navigateurs qui bloquent les cookies tiers)
+  const cookieToken = req.cookies?.pid_session
+  const authHeader = req.headers?.authorization ?? ''
+  const bearerToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null
+  const token = cookieToken || bearerToken
+  if (!token) return res.json({ user: null })
   try {
     const payload = jwt.verify(token, env.jwtSecret)
     return res.json({ user: payload })
