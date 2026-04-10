@@ -123,6 +123,8 @@ router.get('/google/callback', async (req, res) => {
 })
 
 router.get('/me', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
+  res.setHeader('Pragma', 'no-cache')
   const token = req.cookies?.pid_session
   if (!token) return res.json({ user: null })
   if (!env.jwtSecret) return res.json({ user: null })

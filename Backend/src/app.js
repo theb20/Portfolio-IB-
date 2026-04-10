@@ -52,6 +52,13 @@ app.use(
 )
 app.use(morgan('dev'))
 
+// Désactiver le cache pour toutes les routes /api/auth
+app.use('/api/auth', (_req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
+  res.setHeader('Pragma', 'no-cache')
+  next()
+})
+
 // Webhook Stripe — DOIT être monté avant express.json() (corps brut requis)
 app.use('/api/stripe/webhook', stripeWebhookRouter)
 
