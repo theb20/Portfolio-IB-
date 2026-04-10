@@ -9,6 +9,9 @@ export async function createOrderController(req, res, next) {
   try {
     const body = req.body ?? {}
     const user = req.user ?? null
+    console.log('[orders] POST /orders — user:', user ? `${user.email} (${user.sub})` : 'non connecté')
+    console.log('[orders] body.customer:', body.customer ?? 'absent')
+    console.log('[orders] items:', Array.isArray(body.items) ? body.items.length : 'absent')
     const created = await createOrderService({
       ...body,
       customer: user
