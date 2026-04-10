@@ -36,14 +36,19 @@ function mapProductRow(row) {
 }
 
 // Compute how many units of each product are currently "out" (confirmed/in_progress orders)
+// Only counts orders whose rental period overlaps with today
 async function computeRentedStock(db) {
   try {
+    const today = new Date().toISOString().slice(0, 10)
     const [rows] = await db.query(
       `SELECT payload_json AS payloadJson FROM orders WHERE status IN ('confirmed','in_progress')`,
     )
     const rented = {}
     for (const row of rows) {
       const payload = parseJson(row.payloadJson) ?? {}
+      // Skip orders whose rental period has already ended
+      const endDate = payload.endDate ?? payload.end_date ?? null
+      if (endDate && endDate < today) continue
       const items = Array.isArray(payload.items) ? payload.items : []
       for (const item of items) {
         const id = String(item?.id ?? '')

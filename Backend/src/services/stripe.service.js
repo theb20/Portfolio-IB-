@@ -1,5 +1,17 @@
 import Stripe from 'stripe'
 import { env } from '../config/env.js'
+import { getDbPool } from '../config/db.js'
+
+async function getDepositRate() {
+  try {
+    const db = getDbPool()
+    const [rows] = await db.query(`SELECT \`value\` FROM settings WHERE \`key\` = 'deposit_rate' LIMIT 1`)
+    const n = parseFloat(rows[0]?.value)
+    return Number.isFinite(n) && n >= 0 ? n / 100 : 0.2
+  } catch {
+    return 0.2
+  }
+}
 
 function getStripe() {
   if (!env.stripe.secretKey || env.stripe.secretKey.startsWith('sk_test_XXXX')) {
@@ -17,6 +29,7 @@ export async function createPaymentLinkService(order) {
   const items = Array.isArray(order.items) ? order.items : []
   const days = Number(order.days) || 1
   const customer = order.customer ?? {}
+  const depositRate = await getDepositRate()
 
   if (!items.length) throw new Error('La commande ne contient aucun article')
 
@@ -48,15 +61,16 @@ export async function createPaymentLinkService(order) {
     }
   })
 
-  // Ajouter le dépôt de garantie (20%)
+  // Ajouter le dépôt de garantie (taux dynamique depuis settings)
   const subtotal = lineItems.reduce((sum, li) => sum + li.price_data.unit_amount * li.quantity, 0)
-  const deposit = Math.round(subtotal * 0.2)
+  const deposit = Math.round(subtotal * depositRate)
+  const depositPct = Math.round(depositRate * 100)
   lineItems.push({
     price_data: {
       currency: 'eur',
       unit_amount: deposit,
       product_data: {
-        name: 'Dépôt de garantie (20%)',
+        name: `Dépôt de garantie (${depositPct}%)`,
         description: 'Restitué en fin de location',
       },
     },

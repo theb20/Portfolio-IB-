@@ -27,12 +27,14 @@ export async function createOrderService(payload) {
   }
 }
 
-export async function listOrdersService() {
+export async function listOrdersService({ limit = 200, offset = 0 } = {}) {
   const db = getDbPool()
   const [rows] = await db.query(
     `SELECT id, status, payload_json AS payloadJson, created_at AS createdAt
      FROM orders
-     ORDER BY created_at DESC, id DESC`,
+     ORDER BY created_at DESC, id DESC
+     LIMIT ? OFFSET ?`,
+    [limit, offset],
   )
   return rows.map((r) => {
     const payload = parseJson(r.payloadJson) ?? {}
@@ -50,19 +52,19 @@ export async function listMyOrdersService(userSub) {
   const [rows] = await db.query(
     `SELECT id, status, payload_json AS payloadJson, created_at AS createdAt
      FROM orders
+     WHERE JSON_UNQUOTE(JSON_EXTRACT(payload_json, '$.customer.sub')) = ?
      ORDER BY created_at DESC, id DESC`,
+    [userSub],
   )
-  return rows
-    .map((r) => {
-      const payload = parseJson(r.payloadJson) ?? {}
-      return {
-        ...payload,
-        id: String(r.id),
-        status: String(r.status ?? 'pending'),
-        createdAt: r.createdAt ?? undefined,
-      }
-    })
-    .filter((r) => r.customer?.sub === userSub)
+  return rows.map((r) => {
+    const payload = parseJson(r.payloadJson) ?? {}
+    return {
+      ...payload,
+      id: String(r.id),
+      status: String(r.status ?? 'pending'),
+      createdAt: r.createdAt ?? undefined,
+    }
+  })
 }
 
 export async function updateOrderStatusService(id, status) {
